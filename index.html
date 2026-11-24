@@ -25,12 +25,12 @@ h2{font-size:15px;margin:18px 0 8px}
 #adt tbody tr:nth-child(even) td{background:#fafbfd}#adt tbody tr:hover td{background:#eef3fa}
 #art .neg{color:#b91c1c;font-weight:600}#art .pos{color:#c2410c;font-weight:600}
 .kpi button.kg{background:#f0fdf4;border-color:#bbf7d0}.kpi button.kg b{color:#15803d}.kpi button.kr{background:#fef2f2;border-color:#fecaca}.kpi button.kr b{color:#b91c1c}.kpi button.ko{background:#fff7ed;border-color:#fed7aa}.kpi button.ko b{color:#c2410c}.kpi button.kt{background:#f8fafc}.kpi button.kt b{color:#1e293b}.kpi button.on{box-shadow:0 0 0 2px #14202e inset}
-#macc h2{border-left:4px solid #2563eb;padding-left:10px}</style><style>#akpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:16px}
-#akpi button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:16px 10px;min-height:112px;border-radius:14px;border:1.5px solid;text-align:center;font:inherit;transition:transform .12s,box-shadow .12s}
+#macc h2{border-left:4px solid #2563eb;padding-left:10px}</style><style>#akpi{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-bottom:14px}@media(max-width:1100px){#akpi{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:640px){#akpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#akpi button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 6px;min-height:76px;border-radius:12px;border:1.5px solid;text-align:center;font:inherit;transition:transform .12s,box-shadow .12s}
 #akpi button:not(.pl):hover{transform:translateY(-2px);box-shadow:0 6px 16px #0f172a1f}
-#akpi .kl{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
-#akpi b{font-size:36px;line-height:1.1;font-weight:800;letter-spacing:-.5px}
-#akpi small{font-size:11.5px;opacity:.75}
+#akpi .kl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+#akpi b{font-size:25px;line-height:1.1;font-weight:800;letter-spacing:-.3px}
+#akpi small{font-size:10.5px;opacity:.75;line-height:1.2}
 #akpi button.kg{background:linear-gradient(180deg,#f0fdf4,#dcfce7);border-color:#86efac}#akpi button.kg .kl{color:#166534}#akpi button.kg b{color:#15803d}
 #akpi button.kr{background:linear-gradient(180deg,#fef2f2,#fee2e2);border-color:#fca5a5}#akpi button.kr .kl{color:#991b1b}#akpi button.kr b{color:#b91c1c}
 #akpi button.ko{background:linear-gradient(180deg,#fff7ed,#ffedd5);border-color:#fdba74}#akpi button.ko .kl{color:#9a3412}#akpi button.ko b{color:#c2410c}
@@ -192,7 +192,7 @@ function accCard(){var el=$('auc'),has=AM&&AI;el.className='chip '+(has?(AFR?'ne
 function pct(a,b){return b?a/b*100:0}
 function accDraw(){accCard();$('abody').style.display=AM?'':'none';if(!AM)return;var ag=accAgg(AM,AR,AF.scope),T={t:0,h:0,m:0,o:0,qm:0,qo:0};
  ag.forEach(function(b){for(var k in T)T[k]+=b[k]});
- var ac=pct(T.h,T.t),K=[['','Total item',F.format(T.t),'kt','item non-consign'],['','HIT',F.format(T.h),'kg','selisih 0'],['M','MISS',F.format(T.m),'kr','WMS < NAV · klik untuk filter'],['O','OVER',F.format(T.o),'ko','WMS > NAV · klik untuk filter'],['','Akurasi',ac.toFixed(1).replace('.',',')+'%',ac>=90?'kg':'kr','HIT ÷ total · target ≥ 90%'],['','Qty MISS',F.format(T.qm),'kr','total qty kurang di WMS'],['','Qty OVER',F.format(T.qo),'ko','total qty lebih di WMS']];
+ var ac=pct(T.h,T.t),K=[['','Total item',F.format(T.t),'kt','item non-consign'],['','HIT',F.format(T.h),'kg','selisih 0'],['M','MISS',F.format(T.m),'kr','WMS < NAV · klik filter'],['O','OVER',F.format(T.o),'ko','WMS > NAV · klik filter'],['','Akurasi',ac.toFixed(1).replace('.',',')+'%',ac>=90?'kg':'kr','target ≥ 90%'],['','Qty MISS',F.format(T.qm),'kr','qty kurang di WMS'],['','Qty OVER',F.format(T.qo),'ko','qty lebih di WMS']];
  $('akpi').innerHTML=K.map(function(x){return '<button type="button" class="'+(x[0]?(AF.st===x[0]?'on':''):'pl')+' '+x[3]+'" data-s="'+x[0]+'"><span class="kl">'+x[1]+'</span><b>'+x[2]+'</b><small>'+esc(x[4])+'</small></button>'}).join('');
  ag.sort(function(a,b){return (b.m+b.o)-(a.m+a.o)});
  var ap=function(b){var a=pct(b.h,b.t);return pill(a>=90?'pg':'pr',a.toFixed(1).replace('.',',')+'%')},row=function(b){return '<td class="n">'+pill('pt',F.format(b.t))+'</td><td class="n">'+pill('pg',F.format(b.h))+'</td><td class="n">'+pill('pr',F.format(b.m))+'</td><td class="n">'+pill('po',F.format(b.o))+'</td><td class="n">'+ap(b)+'</td><td class="n neg">'+F.format(b.qm)+'</td><td class="n pos">'+F.format(b.qo)+'</td>'};
