@@ -25,7 +25,7 @@ h2{font-size:15px;margin:18px 0 8px}
 #adt tbody tr:nth-child(even) td{background:#fafbfd}#adt tbody tr:hover td{background:#eef3fa}
 #art .neg{color:#b91c1c;font-weight:600}#art .pos{color:#c2410c;font-weight:600}
 .kpi button.kg{background:#f0fdf4;border-color:#bbf7d0}.kpi button.kg b{color:#15803d}.kpi button.kr{background:#fef2f2;border-color:#fecaca}.kpi button.kr b{color:#b91c1c}.kpi button.ko{background:#fff7ed;border-color:#fed7aa}.kpi button.ko b{color:#c2410c}.kpi button.kt{background:#f8fafc}.kpi button.kt b{color:#1e293b}.kpi button.on{box-shadow:0 0 0 2px #14202e inset}
-#macc h2{border-left:4px solid #2563eb;padding-left:10px}</style><style>#akpi{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-bottom:14px}@media(max-width:1100px){#akpi{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:640px){#akpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#macc h2{border-left:4px solid #2563eb;padding-left:10px}</style><style>#akpi{display:grid;grid-template-columns:repeat(5,minmax(0,260px));gap:10px;margin-bottom:14px}@media(max-width:1100px){#akpi{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:640px){#akpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
 #akpi button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 6px;min-height:76px;border-radius:12px;border:1.5px solid;text-align:center;font:inherit;transition:transform .12s,box-shadow .12s}
 #akpi button:not(.pl):hover{transform:translateY(-2px);box-shadow:0 6px 16px #0f172a1f}
 #akpi .kl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
@@ -50,7 +50,7 @@ h2{font-size:15px;margin:18px 0 8px}
 <div class="bar" style="display:none"><select id="asc"><option value="all">Semua item</option><option value="N">Non-consign</option><option value="Y">Consign</option></select></div>
 <h2>Summary per category <span class="cnt" id="ahint">(klik baris untuk memfilter daftar di bawah)</span></h2><div class="wrap"><table class="rc" id="art"></table></div>
 <h2>Prioritas perbaikan: MISS &amp; OVER</h2>
-<div class="bar"><input id="aq" placeholder="Cari item code, nama, brand..."><select id="afc"></select><select id="afs"><option value="">MISS + OVER</option><option value="M">MISS (WMS &lt; NAV)</option><option value="O">OVER (WMS &gt; NAV)</option></select><button id="aex" type="button" class="ab">Unduh CSV</button></div>
+<div class="bar"><input id="aq" placeholder="Cari item code, nama, brand..."><select id="afc"></select><select id="afb"></select><select id="afs"><option value="">MISS + OVER</option><option value="M">MISS (WMS &lt; NAV)</option><option value="O">OVER (WMS &gt; NAV)</option></select><button id="aex" type="button" class="ab">Unduh CSV</button></div>
 <div class="cnt" id="acnt"></div><div class="wrap"><table id="adt"><thead></thead><tbody></tbody></table></div><button id="amore" type="button" class="ab" style="margin-top:8px">Tampilkan lebih banyak</button>
 <p class="cnt">Selisih = Ending Stock WMS − Ending Stock NAV. HIT = selisih 0. MISS = WMS lebih kecil dari NAV (NAV mencatat lebih banyak dari fisik WMS). OVER = WMS lebih besar dari NAV (fisik di WMS belum tercatat di NAV). Akurasi = HIT / total item (hijau ≥ 90%, merah &lt; 90%). Item consign tidak ikut dihitung.</p></div></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -183,7 +183,7 @@ document.getElementById('lgp').addEventListener('keydown',function(e){if(e.key==
 window.addEventListener('focus',function(){if(SESS){load();if(TAB==='acc')loadAcc()}});
 
 function pill(c,v){return '<span class="pl2 '+c+'">'+v+'</span>'}
-var TAB='cc',AM=null,AR=[],AV=0,AI=null,AMSG='',AFR=0,AF={scope:'N',cat:'',st:'',q:'',n:300,i:12,d:-1};
+var TAB='cc',AM=null,AR=[],AV=0,AI=null,AMSG='',AFR=0,AF={scope:'N',cat:'',brand:'',st:'',q:'',n:300,i:12,d:-1};
 var ACOL=[['Category',0],['Brand',1],['Item No',2],['Item Name',3],['UOM',4],['Stok WMS',5,1],['Stok NAV',6,1],['OTS NP',7,1],['Failed In',8,1],['Failed Out',9,1],['Unposted Sales',10,1],['Ending NAV',11,1],['Selisih',12,1],['Status',13],['Last Adj. NAV',15]];
 function tab(t){TAB=t;$('mcc').style.display=t==='cc'?'':'none';$('macc').style.display=t==='acc'?'':'none';[].forEach.call(document.querySelectorAll('.tb'),function(b){b.classList.toggle('on',b.dataset.t===t)});
  try{history.replaceState(null,'',t==='acc'?'#accuracy':location.pathname+location.search)}catch(e){}if(t==='acc'&&SESS)loadAcc()}
@@ -192,14 +192,16 @@ function accCard(){var el=$('auc'),has=AM&&AI;el.className='chip '+(has?(AFR?'ne
 function pct(a,b){return b?a/b*100:0}
 function accDraw(){accCard();$('abody').style.display=AM?'':'none';if(!AM)return;var ag=accAgg(AM,AR,AF.scope),T={t:0,h:0,m:0,o:0,qm:0,qo:0};
  ag.forEach(function(b){for(var k in T)T[k]+=b[k]});
- var ac=pct(T.h,T.t),K=[['','Total item',F.format(T.t),'kt','item non-consign'],['','HIT',F.format(T.h),'kg','selisih 0'],['M','MISS',F.format(T.m),'kr','WMS < NAV · klik filter'],['O','OVER',F.format(T.o),'ko','WMS > NAV · klik filter'],['','Akurasi',ac.toFixed(1).replace('.',',')+'%',ac>=90?'kg':'kr','target ≥ 90%'],['','Qty MISS',F.format(T.qm),'kr','qty kurang di WMS'],['','Qty OVER',F.format(T.qo),'ko','qty lebih di WMS']];
+ var ac=pct(T.h,T.t),K=[['','Akurasi',ac.toFixed(1).replace('.',',')+'%',ac>=90?'kg':'kr','target ≥ 90%'],['','Total item',F.format(T.t),'kt','item non-consign'],['','HIT',F.format(T.h),'kg','selisih 0'],['M','MISS',F.format(T.m),'kr','WMS < NAV · klik filter'],['O','OVER',F.format(T.o),'ko','WMS > NAV · klik filter']];
  $('akpi').innerHTML=K.map(function(x){return '<button type="button" class="'+(x[0]?(AF.st===x[0]?'on':''):'pl')+' '+x[3]+'" data-s="'+x[0]+'"><span class="kl">'+x[1]+'</span><b>'+x[2]+'</b><small>'+esc(x[4])+'</small></button>'}).join('');
  ag.sort(function(a,b){return (b.m+b.o)-(a.m+a.o)});
  var ap=function(b){var a=pct(b.h,b.t);return pill(a>=90?'pg':'pr',a.toFixed(1).replace('.',',')+'%')},row=function(b){return '<td class="n">'+pill('pt',F.format(b.t))+'</td><td class="n">'+pill('pg',F.format(b.h))+'</td><td class="n">'+pill('pr',F.format(b.m))+'</td><td class="n">'+pill('po',F.format(b.o))+'</td><td class="n">'+ap(b)+'</td><td class="n neg">'+F.format(b.qm)+'</td><td class="n pos">'+F.format(b.qo)+'</td>'};
  $('art').innerHTML='<tr><th>Category</th><th class="h-t">Total item</th><th class="h-g">HIT</th><th class="h-r">MISS</th><th class="h-o">OVER</th><th class="h-g">Akurasi</th><th class="h-r">Qty MISS</th><th class="h-o">Qty OVER</th></tr>'+ag.map(function(b){return '<tr class="cl'+(AF.cat===b.c?' sel':'')+'" data-c="'+esc(b.c)+'"><td>'+esc(b.c)+'</td>'+row(b)+'</tr>'}).join('')+'<tr class="tt"><td>TOTAL</td>'+row(T)+'</tr>';
  var fc=$('afc'),cur=AF.cat;fc.innerHTML='<option value="">Semua category</option>'+AM.cats.slice().sort().map(function(c){return '<option'+(c===cur?' selected':'')+'>'+esc(c)+'</option>'}).join('');
+ var bs={};AR.forEach(function(r){if((AF.scope==='all'||r[14]===AF.scope)&&(!AF.cat||AM.cats[r[0]]===AF.cat))bs[r[1]||'(tanpa brand)']=1});var bl=Object.keys(bs).sort(function(x,y){return x.localeCompare(y,'id')});if(AF.brand&&!bs[AF.brand])AF.brand='';
+ $('afb').innerHTML='<option value="">Semua brand ('+bl.length+')</option>'+bl.map(function(x){return '<option'+(x===AF.brand?' selected':'')+'>'+esc(x)+'</option>'}).join('');
  accList()}
-function accFilt(){var q=AF.q.toLowerCase();return AR.filter(function(r){return (AF.scope==='all'||r[14]===AF.scope)&&(!AF.cat||AM.cats[r[0]]===AF.cat)&&(!AF.st||r[13]===AF.st)&&(!q||(r[1]+' '+r[2]+' '+r[3]).toLowerCase().indexOf(q)>=0)})}
+function accFilt(){var q=AF.q.toLowerCase();return AR.filter(function(r){return (AF.scope==='all'||r[14]===AF.scope)&&(!AF.cat||AM.cats[r[0]]===AF.cat)&&(!AF.st||r[13]===AF.st)&&(!AF.brand||(r[1]||'(tanpa brand)')===AF.brand)&&(!q||(r[1]+' '+r[2]+' '+r[3]).toLowerCase().indexOf(q)>=0)})}
 function accList(){var L=accFilt(),i=AF.i,d=AF.d,v=function(r){return i===12?Math.abs(r[12]):i===0?AM.cats[r[0]]:r[i]};
  L.sort(function(a,b){var x=v(a),y=v(b);return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'id',{numeric:true}))*d});
  $('adt').tHead.innerHTML='<tr>'+ACOL.map(function(c){return '<th data-i="'+c[1]+'">'+c[0]+(c[1]===i?(d>0?' ▲':' ▼'):'')+'</th>'}).join('')+'</tr>';
@@ -208,7 +210,7 @@ function accList(){var L=accFilt(),i=AF.i,d=AF.d,v=function(r){return i===12?Mat
   if(c[1]===12)return '<td class="n">'+pill(x>0?'po':'pr',(x>0?'+':'')+F.format(x))+'</td>';
   if(c[1]===0)return '<td>'+esc(AM.cats[x])+'</td>';if(c[2])return '<td class="n">'+fm(x)+'</td>';if(c[1]===3)return '<td class="nm">'+esc(x)+'</td>';
   if(c[1]===14)return '<td class="c">'+(x==='Y'?'Ya':'Tidak')+'</td>';return '<td class="'+(c[1]===0?'':'c')+'">'+esc(x)+'</td>'}).join('')+'</tr>'}).join('');
- $('acnt').textContent=Math.min(AF.n,L.length)+' dari '+L.length+' item bermasalah'+(AF.cat?' · category: '+AF.cat:'');$('amore').style.display=L.length>AF.n?'':'none';return L}
+ $('acnt').textContent=Math.min(AF.n,L.length)+' dari '+L.length+' item bermasalah'+(AF.cat?' · category: '+AF.cat:'')+(AF.brand?' · brand: '+AF.brand:'');$('amore').style.display=L.length>AF.n?'':'none';return L}
 function persistAcc(res,name){var CH=2500,n=Math.max(1,Math.ceil(res.rows.length/CH)),u=SESS.user,now=new Date().toISOString(),i=0;
  function put(k,p){return sb.from('cc_uploads').upsert({kind:k,payload:p,file_name:name,uploaded_at:now,uploaded_by:u.id,uploaded_by_email:u.email},{onConflict:'kind'})}
  function nx(){if(i<n){var k='acc'+('0'+i).slice(-2),p=res.rows.slice(i*CH,(i+1)*CH);i++;return put(k,p).then(function(r){return r.error?r.error:nx()})}
@@ -231,6 +233,7 @@ $('asc').addEventListener('change',function(){AF.scope=this.value;AF.n=300;accDr
 $('akpi').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!b.dataset.s)return;AF.st=AF.st===b.dataset.s?'':b.dataset.s;$('afs').value=AF.st;AF.n=300;accDraw()});
 $('art').addEventListener('click',function(e){var r=e.target.closest('tr.cl');if(!r)return;AF.cat=AF.cat===r.dataset.c?'':r.dataset.c;AF.n=300;accDraw()});
 $('afc').addEventListener('change',function(){AF.cat=this.value;AF.n=300;accDraw()});
+$('afb').addEventListener('change',function(){AF.brand=this.value;AF.n=300;accList()});
 $('afs').addEventListener('change',function(){AF.st=this.value;AF.n=300;accDraw()});
 $('aq').addEventListener('input',function(){AF.q=this.value.trim();AF.n=300;accList()});
 $('amore').addEventListener('click',function(){AF.n+=300;accList()});
